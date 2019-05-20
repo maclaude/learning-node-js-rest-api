@@ -2,6 +2,7 @@
  * NPM import
  */
 const express = require('express');
+const bodyParser = require('body-parser');
 
 /**
  * Local import
@@ -18,6 +19,10 @@ const app = express();
 /**
  * Middlewares
  */
+// Parser (Parsing the incoming JSON data)
+// ! This middleware should always be placed first
+app.use(bodyParser.json());
+
 // Routes
 app.use('/feed', feedRoutes);
 
