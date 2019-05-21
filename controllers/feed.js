@@ -1,6 +1,11 @@
 // Feed controller
 
 /**
+ * NPM Import
+ */
+const { validationResult } = require('express-validator/check');
+
+/**
  * Code
  */
 exports.getPosts = (req, res, next) => {
@@ -21,14 +26,23 @@ exports.getPosts = (req, res, next) => {
 };
 
 exports.postPost = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      message: 'Validation failed, entered data is incorrect',
+      errors: errors.array(),
+    });
+  }
+
   const { title, content } = req.body;
 
   // @TODO - Create post in database
 
-  res.status(201).json({
+  return res.status(201).json({
     message: 'Post created',
     post: {
-      id: new Date().toISOString(),
+      _id: new Date().toISOString(),
       title,
       content,
       creator: { name: 'Marc-Antoine' },

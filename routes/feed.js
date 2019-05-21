@@ -6,7 +6,10 @@ const express = require('express');
 /**
  * Local import
  */
+// Controllers middleware functions
 const feedController = require('../controllers/feed');
+// Utils
+const feedValidation = require('../utils/feed-validation');
 
 /**
  * Code
@@ -19,7 +22,7 @@ const router = express.Router();
 // GET /feed/posts
 router.get('/posts', feedController.getPosts);
 // POST /feed/post
-router.post('/post', feedController.postPost);
+router.post('/post', feedValidation.postPost, feedController.postPost);
 
 /**
  * Export
