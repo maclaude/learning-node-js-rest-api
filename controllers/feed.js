@@ -35,10 +35,10 @@ exports.postPost = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: 'Validation failed, entered data is incorrect',
-      errors: errors.array(),
-    });
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    // Throw error to exit the current fonction execution & reach the error middleware
+    throw error;
   }
 
   const { title, content } = req.body;
@@ -50,7 +50,7 @@ exports.postPost = (req, res, next) => {
     creator: { name: 'Marc-Antoine' },
   });
 
-  return post
+  post
     .save()
     .then(response => {
       console.log(response);
@@ -59,5 +59,12 @@ exports.postPost = (req, res, next) => {
         post: response,
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = err;
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      // Use of next inside of a promise to reach the error middleware
+      next(error);
+    });
 };
