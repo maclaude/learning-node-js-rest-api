@@ -15,20 +15,48 @@ const Post = require('../models/post');
  * Code
  */
 exports.getPosts = (req, res, next) => {
-  res.status(200).json({
-    posts: [
-      {
-        _id: '1',
-        title: 'Posca !',
-        content: 'What a great marker !',
-        imageURL: 'images/posca.jpeg',
-        creator: {
-          name: 'Marc-Antoine',
-        },
-        createdAt: new Date(),
-      },
-    ],
-  });
+  Post.find()
+    .then(posts => {
+      if (!posts) {
+        const error = new Error('Could not find the requested posts.');
+        error.statusCode = 404;
+        // An error thrown in a then, will reach the catch as an argument
+        throw error;
+      }
+      // Sending the response
+      res.status(200).json({ message: 'Posts fetched', posts });
+    })
+    .catch(err => {
+      const error = err;
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      // Use of next inside of a promise to reach the error middleware
+      next(error);
+    });
+};
+
+exports.getPost = (req, res, next) => {
+  const { postId } = req.params;
+  Post.findById(postId)
+    .then(post => {
+      if (!post) {
+        const error = new Error('Could not find the requested post.');
+        error.statusCode = 404;
+        // An error thrown in a then, will reach the catch as an argument
+        throw error;
+      }
+      // Sending the response
+      res.status(200).json({ message: 'Post fetched', post });
+    })
+    .catch(err => {
+      const error = err;
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      // Use of next inside of a promise to reach the error middleware
+      next(error);
+    });
 };
 
 exports.postPost = (req, res, next) => {
@@ -54,6 +82,7 @@ exports.postPost = (req, res, next) => {
     .save()
     .then(response => {
       console.log(response);
+      // Sending the response
       res.status(201).json({
         message: 'Post created',
         post: response,
