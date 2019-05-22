@@ -10,6 +10,8 @@ const { validationResult } = require('express-validator/check');
  */
 // Models
 const Post = require('../models/post');
+// Utils
+const errorHandler = require('../utils/error-handler');
 
 /**
  * Code
@@ -26,14 +28,7 @@ exports.getPosts = (req, res, next) => {
       // Sending the response
       res.status(200).json({ message: 'Posts fetched', posts });
     })
-    .catch(err => {
-      const error = err;
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      // Use of next inside of a promise to reach the error middleware
-      next(error);
-    });
+    .catch(errorHandler(next));
 };
 
 exports.getPost = (req, res, next) => {
@@ -49,14 +44,7 @@ exports.getPost = (req, res, next) => {
       // Sending the response
       res.status(200).json({ message: 'Post fetched', post });
     })
-    .catch(err => {
-      const error = err;
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      // Use of next inside of a promise to reach the error middleware
-      next(error);
-    });
+    .catch(errorHandler(next));
 };
 
 exports.postPost = (req, res, next) => {
@@ -88,12 +76,5 @@ exports.postPost = (req, res, next) => {
         post: response,
       });
     })
-    .catch(err => {
-      const error = err;
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      // Use of next inside of a promise to reach the error middleware
-      next(error);
-    });
+    .catch(errorHandler(next));
 };
