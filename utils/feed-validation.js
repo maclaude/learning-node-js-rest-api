@@ -16,3 +16,12 @@ exports.postPost = [
     .trim()
     .isLength({ min: 10 }),
 ];
+
+exports.putPost = [
+  body('title')
+    .trim()
+    .isLength({ min: 5 }),
+  body('content')
+    .trim()
+    .isLength({ min: 10 }),
+];

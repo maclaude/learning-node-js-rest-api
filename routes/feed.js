@@ -25,6 +25,8 @@ router.get('/posts', feedController.getPosts);
 router.get('/post/:postId', feedController.getPost);
 // POST /feed/post
 router.post('/post', feedValidation.postPost, feedController.postPost);
+// PUT /feed/post/:postId
+router.put('/post/:postId', feedValidation.putPost, feedController.putPost);
 
 /**
  * Export
