@@ -22,7 +22,7 @@ const router = express.Router();
 // PUT /auth/signup
 router.put('/signup', authValidation.signup, authController.signup);
 // POST /auth/login
-router.post('/login');
+router.post('/login', authController.login);
 
 /**
  * Export
