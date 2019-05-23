@@ -8,6 +8,8 @@ const express = require('express');
  */
 // Controllers
 const feedController = require('../controllers/feed');
+// Checking authentication middleware
+const isAuth = require('../middlewares/is-auth');
 // Utils
 const feedValidation = require('../utils/feed-validation');
 
@@ -20,7 +22,7 @@ const router = express.Router();
  * Routes
  */
 // GET /feed/posts
-router.get('/posts', feedController.getPosts);
+router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/post/:postId
 router.get('/post/:postId', feedController.getPost);
 // POST /feed/post
