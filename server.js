@@ -82,7 +82,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/feed', feedRoutes);
-app.user('/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // Error Handling
 app.use((error, req, res, next) => {

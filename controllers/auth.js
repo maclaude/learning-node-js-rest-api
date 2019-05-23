@@ -4,12 +4,15 @@
  * NPM import
  */
 const { validationResult } = require('express-validator/check');
+const bcrypt = require('bcryptjs');
 
 /**
  * Local import
  */
 // Models
 const User = require('../models/user');
+// Utils
+const errorHandler = require('../utils/error-handler');
 
 /**
  * Code
@@ -25,4 +28,21 @@ exports.signup = (req, res, next) => {
   }
 
   const { name, email, password } = req.body;
+
+  // Encrypting password
+  bcrypt
+    .hash(password, 12)
+    .then(hashedPassword => {
+      // Creating new user
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+      });
+      return newUser.save();
+    })
+    .then(response => {
+      res.status(201).json({ message: 'User created', userId: response._id });
+    })
+    .catch(errorHandler(next));
 };
