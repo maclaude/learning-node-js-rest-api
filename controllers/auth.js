@@ -46,3 +46,28 @@ exports.signup = (req, res, next) => {
     })
     .catch(errorHandler(next));
 };
+
+exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  let loadedUser;
+
+  User.findOne({ email })
+    .then(user => {
+      if (!user) {
+        const error = new Error('No user found with this email.');
+        error.statusCode = 401;
+        throw error;
+      }
+      loadedUser = user;
+      // Comparing passwords
+      return bcrypt.compare(password, user.password);
+    })
+    .then(passwordsMatched => {
+      if (!passwordsMatched) {
+        const error = new Error('Passwords do not matched');
+        error.statusCode = 404;
+        throw error;
+      }
+    })
+    .catch(errorHandler(next));
+};
