@@ -24,13 +24,18 @@ const router = express.Router();
 // GET /feed/posts
 router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/post/:postId
-router.get('/post/:postId', feedController.getPost);
+router.get('/post/:postId', isAuth, feedController.getPost);
 // POST /feed/post
-router.post('/post', feedValidation.postPost, feedController.postPost);
+router.post('/post', isAuth, feedValidation.postPost, feedController.postPost);
 // PUT /feed/post/:postId
-router.put('/post/:postId', feedValidation.putPost, feedController.putPost);
+router.put(
+  '/post/:postId',
+  isAuth,
+  feedValidation.putPost,
+  feedController.putPost
+);
 // DELETE /feed/post/:postId
-router.delete('/post/:postId', feedController.deletePost);
+router.delete('/post/:postId', isAuth, feedController.deletePost);
 
 /**
  * Export
