@@ -64,6 +64,7 @@ exports.postPost = (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
     error.statusCode = 422;
+    error.data = errors.array();
     // Throw error to exit the current fonction execution & reach the error middleware
     throw error;
   }
@@ -105,6 +106,7 @@ exports.putPost = (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
     error.statusCode = 422;
+    error.data = errors.array();
     // Throw error to exit the current fonction execution & reach the error middleware
     throw error;
   }

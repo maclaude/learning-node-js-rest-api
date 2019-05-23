@@ -6,7 +6,7 @@ const express = require('express');
 /**
  * Local import
  */
-// Controllers middleware functions
+// Controllers
 const feedController = require('../controllers/feed');
 // Utils
 const feedValidation = require('../utils/feed-validation');
