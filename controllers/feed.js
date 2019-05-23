@@ -10,6 +10,7 @@ const { validationResult } = require('express-validator/check');
  */
 // Models
 const Post = require('../models/post');
+const User = require('../models/user');
 // Utils
 const errorHandler = require('../utils/error-handler');
 const deleteFile = require('../utils/delete-file');
@@ -78,21 +79,32 @@ exports.postPost = (req, res, next) => {
   const { title, content } = req.body;
   const imageUrl = req.file.path;
 
-  const post = new Post({
+  const newPost = new Post({
     title,
     content,
     imageUrl,
-    creator: { name: 'Marc-Antoine' },
+    creator: req.userId,
   });
 
-  post
+  // Init creator variable
+  let creator;
+
+  newPost
     .save()
+    .then(response => User.findById(req.userId))
+    .then(user => {
+      creator = user;
+      // Adding the new post to the user's post array
+      user.posts.push(newPost);
+      // Saving the updated user
+      return user.save();
+    })
     .then(response => {
-      console.log(response);
       // Sending the response
       res.status(201).json({
         message: 'Post created',
-        post: response,
+        post: newPost,
+        creator: { _id: creator._id, name: creator.name },
       });
     })
     .catch(errorHandler(next));
