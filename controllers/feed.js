@@ -205,3 +205,42 @@ exports.deletePost = (req, res, next) => {
     })
     .catch(errorHandler(next));
 };
+
+exports.getUserStatus = (req, res, next) => {
+  const { userId } = req;
+
+  User.findById({ _id: userId })
+    .then(user => {
+      if (!user) {
+        const error = new Error('No user found with this userId.');
+        error.statusCode = 401;
+        throw error;
+      }
+      // Sending the response
+      res.status(200).json({ status: user.status });
+    })
+    .catch(errorHandler(next));
+};
+
+exports.patchUserStatus = (req, res, next) => {
+  const { userId } = req;
+  const { status: newStatus } = req.body;
+
+  User.findById({ _id: userId })
+    .then(user => {
+      if (!user) {
+        const error = new Error('No user found with this userId.');
+        error.statusCode = 401;
+        throw error;
+      }
+      // Updating the user status
+      const updatedUser = user;
+      updatedUser.status = newStatus;
+      return updatedUser.save();
+    })
+    .then(response => {
+      // Sending the response
+      res.status(200).json({ message: 'User status updated' });
+    })
+    .catch(errorHandler(next));
+};

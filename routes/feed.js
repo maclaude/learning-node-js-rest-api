@@ -36,6 +36,10 @@ router.put(
 );
 // DELETE /feed/post/:postId
 router.delete('/post/:postId', isAuth, feedController.deletePost);
+// GET /feed/userStatus
+router.get('/userStatus', isAuth, feedController.getUserStatus);
+// PATCH /feed/userStatus
+router.patch('/userStatus', isAuth, feedController.patchUserStatus);
 
 /**
  * Export
