@@ -143,6 +143,13 @@ exports.putPost = (req, res, next) => {
         throw error;
       }
 
+      // Checking if the creator of the post is the logged in user
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized to update the post');
+        error.statusCode = 403;
+        throw error;
+      }
+
       // Deleting the image if it's been updated
       if (imageUrl !== post.imageUrl) {
         deleteFile(post.imageUrl);
@@ -172,7 +179,14 @@ exports.deletePost = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      // @TODO: Check loggedIn user
+
+      // Checking if the creator of the post is the logged in user
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized to update the post');
+        error.statusCode = 403;
+        throw error;
+      }
+
       deleteFile(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
