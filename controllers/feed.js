@@ -18,29 +18,25 @@ const deleteFile = require('../utils/delete-file');
 /**
  * Code
  */
-exports.getPosts = (req, res, next) => {
+exports.getPosts = async (req, res, next) => {
   // if page is undefined set value to 1
   const currentPage = req.query.page || 1;
   const POST_PER_PAGE = 2;
-  let totalItems;
 
-  Post.find()
-    .countDocuments()
-    .then(count => {
-      totalItems = count;
-      return (
-        Post.find()
-          // Skipping posts of previous pages
-          .skip((currentPage - 1) * POST_PER_PAGE)
-          // Limit of posts we want to retrieve
-          .limit(POST_PER_PAGE)
-      );
-    })
-    .then(posts => {
-      // Sending the response
-      res.status(200).json({ message: 'Posts fetched', posts, totalItems });
-    })
-    .catch(errorHandler(next));
+  try {
+    const totalItems = await Post.find().countDocuments();
+
+    const posts = await Post.find()
+      // Skipping posts of previous pages
+      .skip((currentPage - 1) * POST_PER_PAGE)
+      // Limit of posts we want to retrieve
+      .limit(POST_PER_PAGE);
+
+    // Sending the response
+    res.status(200).json({ message: 'Posts fetched', posts, totalItems });
+  } catch (err) {
+    errorHandler(next);
+  }
 };
 
 exports.getPost = (req, res, next) => {
