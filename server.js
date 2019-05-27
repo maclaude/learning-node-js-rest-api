@@ -19,6 +19,8 @@ const uuidV4 = require('uuid/v4');
 // Routes
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+// Socket
+const socketConnection = require('./socket');
 
 /**
  * Code
@@ -108,8 +110,7 @@ mongoose
     // Setting server listening port
     const server = app.listen(8000);
     // Starting the server with socket.io connection
-    // eslint-disable-next-line global-require
-    const io = require('socket.io')(server);
+    const io = socketConnection.init(server);
     // Listening client connection
     io.on('connection', socket => {
       console.log('Client connected');
