@@ -105,7 +105,14 @@ mongoose
   .connect(DB_URI, { useNewUrlParser: true })
   .then(response => {
     console.log('Connected');
-    // Start the server
-    app.listen(8000);
+    // Setting server listening port
+    const server = app.listen(8000);
+    // Starting the server with socket.io connection
+    // eslint-disable-next-line global-require
+    const io = require('socket.io')(server);
+    // Listening client connection
+    io.on('connection', socket => {
+      console.log('Client connected');
+    });
   })
   .catch(err => console.log(err));
