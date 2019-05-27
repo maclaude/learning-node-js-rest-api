@@ -14,6 +14,8 @@ const User = require('../models/user');
 // Utils
 const errorHandler = require('../utils/error-handler');
 const deleteFile = require('../utils/delete-file');
+// Socket
+const socketConnection = require('../socket');
 
 /**
  * Code
@@ -29,6 +31,7 @@ exports.getPosts = async (req, res, next) => {
 
     // Fetching posts
     const posts = await Post.find()
+      .populate('creator')
       // Skipping posts of previous pages
       .skip((currentPage - 1) * POST_PER_PAGE)
       // Limit of posts we want to retrieve
@@ -100,7 +103,15 @@ exports.postPost = async (req, res, next) => {
     user.posts.push(newPost);
     // Saving the updated user
     await user.save();
-    // Sending the response to the client
+    // Inform all the connected clients
+    socketConnection.getIO().emit('posts', {
+      action: 'create',
+      post: {
+        ...newPost._doc,
+        creator: { _id: req.userId, name: user.name },
+      },
+    });
+    // Sending the response to the client who created the post
     res.status(201).json({
       message: 'Post created',
       post: newPost,
