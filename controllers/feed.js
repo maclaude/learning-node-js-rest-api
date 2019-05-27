@@ -32,6 +32,7 @@ exports.getPosts = async (req, res, next) => {
     // Fetching posts
     const posts = await Post.find()
       .populate('creator')
+      .sort({ createdAt: -1 })
       // Skipping posts of previous pages
       .skip((currentPage - 1) * POST_PER_PAGE)
       // Limit of posts we want to retrieve
@@ -222,6 +223,9 @@ exports.deletePost = async (req, res, next) => {
     // Removing the post id relation with this user
     user.posts.pull(postId);
     await user.save();
+
+    // Inform all the connected clients
+    socketConnection.getIO().emit('posts', { action: 'delete', post: postId });
 
     // Sending the response to the client
     res.status(200).json({ message: 'Post deleted' });
