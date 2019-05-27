@@ -149,7 +149,7 @@ exports.putPost = async (req, res, next) => {
 
   try {
     // Fetching current post
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate('creator');
 
     // Throw an error if nothing is retrieved
     if (!post) {
@@ -159,7 +159,7 @@ exports.putPost = async (req, res, next) => {
     }
 
     // Checking if the creator of the post is the logged in user
-    if (post.creator.toString() !== req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       const error = new Error('Not authorized to update the post');
       error.statusCode = 403;
       throw error;
@@ -177,6 +177,11 @@ exports.putPost = async (req, res, next) => {
 
     // Saving the updated post
     const response = await post.save();
+
+    // Inform all the connected clients
+    socketConnection
+      .getIO()
+      .emit('posts', { action: 'update', post: response });
 
     // Sending the response to the client
     res.status(200).json({ message: 'Post updated', post: response });
